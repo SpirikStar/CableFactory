@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'appcabry/css/pointres.css' %}">
+    <title>Результат</title>
+</head>
+
+<body>
+    <section class="cntr__res">
+        <p style="font-size: 18px;font-weight: 600;text-align: center;">Результат заполнения формы</p>
+    </section>
+    <section class="cntr__res_block">
+        <table style="border-collapse: collapse; ">
+            <tr>
+                {% for keyNum, valueData in Res.items %}
+                    <th style="width: 100px;">{{keyNum}}</th>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for keyNum, valueData in Res.items %}
+                    <td style="text-align: center;">{{valueData}}</td>
+                {% endfor %}
+            </tr>
+        </table>
+    </section>
+    <section class="cntr__rsh">
+        <p style="font-size: 18px;font-weight: 600;text-align: center;">Расшифровка</p>
+        <table>
+            {% for keyI, valueI in Decryption.items %}
+                <tr>
+                    <td style="text-align: center;">{{valueI}}</td>
+                    <td style="text-align: center;">{{keyI}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <p style="font-size: 18px;font-weight: 600;text-align: center;">Полный список</p>
+        <table style="margin-top: 10px;">
+            {% for keyI, valueI in Rash.items %}
+            <tr>
+                <td style="text-align: center;">{{valueI}}</td>
+                <td style="text-align: center;">{{keyI}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </section>
+    <section class="cntr__btn">
+        <a href="{% url 'homeproject' %}" class="btnclou"> ← Вернуться к форме</a>
+    </section>
+</body>
+
+</html>

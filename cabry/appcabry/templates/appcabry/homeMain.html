@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'appcabry/css/point.css' %}">
+    <title>Форма для заполнения</title>
+</head>
+<body>
+    <section class="container">
+        <form action="{% url 'viewspost' %}" method="POST">
+            {% csrf_token %}
+            {% for KeyNum, ValueTitle in qust.items %}
+                {% if KeyNum == 1 %}
+                    {% for KeyTitle, ValueData in ValueTitle.items %}
+                        <p class="vop__title">{{KeyNum}}. {{KeyTitle}}</p>
+                        <select name="{{KeyNum}}&$&{{KeyTitle}}" id="{{KeyNum}}" class="select__optin" onChange="openChag(this);">
+                            <option value="" hidden>Необходимо выбрать</option>
+                            {% for DataPodc in ValueData %}
+                                <option value="{{KeyNum}}&$&{{KeyTitle}}&$&{{DataPodc}}">{{DataPodc}}</option>
+                            {% endfor %}
+                        </select>
+                    {% endfor %}
+                {% else %}
+                    <p class="vop__title">{{KeyNum}}. {{ValueTitle}}</p>
+                    <select name="{{KeyNum}}&$&{{ValueTitle}}" id="{{KeyNum}}" class="select__optin" onChange="openChag(this);">
+                        <option value="" hidden>Необходимо выбрать</option>
+                    </select>
+                {% endif%}
+            {% endfor %}
+            <p>
+                <button class="btn__enter">Отправить</button>
+            </p>
+        </form>
+    </section>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script>
+        function openChag(dataEts){
+            event.preventDefault();
+            let titleValue = dataEts.options[dataEts.selectedIndex].value;
+            $.ajax({
+                type:'POST',
+                url:"/postdata",
+                data:{
+                    nameDataTitleValue:titleValue,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',             
+                },
+                success: function(data) {
+                    for (let [keyQuesеNumber, ValueData] of Object.entries(data)) {
+                        let selectElement = document.getElementById(`${keyQuesеNumber}`);
+                        console.log(selectElement);
+                        for (let [KeyTitle, ValueCatalog] of Object.entries(ValueData)) {
+                            console.log(KeyTitle, ValueCatalog);
+                            let option = document.querySelector(`option[value="${keyQuesеNumber}&$&${KeyTitle}"]`);
+                            if (option) {
+                                option.remove();
+                            }
+                            if (Array.isArray(ValueCatalog) == true){
+                                // selectElement.innerHTML = '';
+                                for (let index = 0; index < ValueCatalog.length; ++index) {
+                                    let opt = document.createElement('option');
+                                    opt.value = `${keyQuesеNumber}&$&${KeyTitle}&$&${ValueCatalog[index]}`;
+                                    opt.innerHTML = ValueCatalog[index];
+                                    selectElement.appendChild(opt);
+                                }
+                            }
+                        }
+                    }
+                },
+                error: function(data) {
+                    console.log(data);
+                    alert("Что-то пошло не так! Попробуйте повторить чуть позднее.");
+                }
+            }) 
+        }
+    </script>
+</body>
+</html>
